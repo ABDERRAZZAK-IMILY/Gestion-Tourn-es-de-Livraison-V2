@@ -6,11 +6,13 @@ import com.logistics.delivery_optimizer.Model.Warehouse;
 import com.logistics.delivery_optimizer.Model.Enums.VehicleType;
 import com.logistics.delivery_optimizer.util.DistanceCalculator;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnProperty(name = "app.optimization.algorithm", havingValue = "clarke_wright")
 public class ClarkeWrightOptimizer implements TourOptimizer {
 
     private static class Saving {
