@@ -5,6 +5,7 @@ import com.logistics.delivery_optimizer.dto.WarehouseRequestDTO;
 import com.logistics.delivery_optimizer.dto.WarehouseResponseDTO;
 import com.logistics.delivery_optimizer.mapper.WarehouseMapper;
 import com.logistics.delivery_optimizer.repository.WarehouseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +15,15 @@ import java.util.stream.Collectors;
 @Service
 public class WarehouseServiceImpl implements WarehouseService {
 
-    private WarehouseRepository warehouseRepository;
-    private WarehouseMapper warehouseMapper;
+    private final WarehouseRepository warehouseRepository;
+    private final WarehouseMapper warehouseMapper;
+
+    @Autowired
+    public WarehouseServiceImpl(WarehouseRepository warehouseRepository , WarehouseMapper warehouseMapper) {
+        this.warehouseRepository = warehouseRepository;
+        this.warehouseMapper = warehouseMapper;
+    }
+
 
     @Override
     public WarehouseResponseDTO createWarehouse(WarehouseRequestDTO requestDTO) {
@@ -36,13 +44,5 @@ public class WarehouseServiceImpl implements WarehouseService {
         return warehouseRepository.findAll().stream()
                 .map(warehouseMapper::toResponseDTO)
                 .collect(Collectors.toList());
-    }
-
-    public void setWarehouseRepository(WarehouseRepository warehouseRepository) {
-        this.warehouseRepository = warehouseRepository;
-    }
-
-    public void setWarehouseMapper(WarehouseMapper warehouseMapper) {
-        this.warehouseMapper = warehouseMapper;
     }
 }
