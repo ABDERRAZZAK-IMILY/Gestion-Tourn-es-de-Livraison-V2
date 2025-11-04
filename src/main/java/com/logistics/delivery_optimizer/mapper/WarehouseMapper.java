@@ -3,8 +3,10 @@ package com.logistics.delivery_optimizer.mapper;
 import com.logistics.delivery_optimizer.dto.WarehouseRequestDTO;
 import com.logistics.delivery_optimizer.dto.WarehouseResponseDTO;
 import com.logistics.delivery_optimizer.Model.Warehouse;
+import org.springframework.stereotype.Component;
 
 
+@Component
 public class WarehouseMapper {
 
     public  Warehouse toEntity(WarehouseRequestDTO dto) {

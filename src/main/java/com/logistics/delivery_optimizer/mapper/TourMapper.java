@@ -5,9 +5,11 @@ import com.logistics.delivery_optimizer.dto.TourRequestDto;
 import com.logistics.delivery_optimizer.Model.Tour;
 import com.logistics.delivery_optimizer.Model.Vehicle;
 import com.logistics.delivery_optimizer.Model.Warehouse;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+@Component
 public class TourMapper {
 
     private VehicleMapper vehicleMapper;
