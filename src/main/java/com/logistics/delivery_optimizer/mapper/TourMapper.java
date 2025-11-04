@@ -5,6 +5,7 @@ import com.logistics.delivery_optimizer.dto.TourRequestDto;
 import com.logistics.delivery_optimizer.Model.Tour;
 import com.logistics.delivery_optimizer.Model.Vehicle;
 import com.logistics.delivery_optimizer.Model.Warehouse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -12,9 +13,16 @@ import java.util.stream.Collectors;
 @Component
 public class TourMapper {
 
-    private VehicleMapper vehicleMapper;
-    private DeliveryMapper deliveryMapper;
-    private WarehouseMapper warehouseMapper;
+    private final VehicleMapper vehicleMapper;
+    private final DeliveryMapper deliveryMapper;
+    private final WarehouseMapper warehouseMapper;
+
+    @Autowired
+    public TourMapper(VehicleMapper vehicleMapper, DeliveryMapper deliveryMapper, WarehouseMapper warehouseMapper) {
+        this.vehicleMapper = vehicleMapper;
+        this.deliveryMapper = deliveryMapper;
+        this.warehouseMapper = warehouseMapper;
+    }
 
     public Tour toEntity(TourRequestDto dto, Warehouse warehouse, Vehicle vehicle) {
         if (dto == null) return null;
@@ -38,17 +46,5 @@ public class TourMapper {
                         .map(deliveryMapper::toResponseDTO)
                         .collect(Collectors.toList()))
                 .build();
-    }
-    
-    public void setVehicleMapper(VehicleMapper vehicleMapper) {
-        this.vehicleMapper = vehicleMapper;
-    }
-
-    public void setDeliveryMapper(DeliveryMapper deliveryMapper) {
-        this.deliveryMapper = deliveryMapper;
-    }
-
-    public void setWarehouseMapper(WarehouseMapper warehouseMapper) {
-        this.warehouseMapper = warehouseMapper;
     }
 }
