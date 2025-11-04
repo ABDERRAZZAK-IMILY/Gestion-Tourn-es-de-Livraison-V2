@@ -56,6 +56,10 @@ public class Delivery {
 
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    @EqualsAndHashCode.Exclude
+    private Customer customer;
 
 
     
