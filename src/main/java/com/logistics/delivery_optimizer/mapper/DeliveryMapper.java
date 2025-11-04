@@ -4,7 +4,9 @@ import com.logistics.delivery_optimizer.Model.Delivery;
 import com.logistics.delivery_optimizer.Model.Enums.DeliveryStatus;
 import com.logistics.delivery_optimizer.dto.DeliveryRequestDTO;
 import com.logistics.delivery_optimizer.dto.DeliveryResponseDTO;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DeliveryMapper {
 
 

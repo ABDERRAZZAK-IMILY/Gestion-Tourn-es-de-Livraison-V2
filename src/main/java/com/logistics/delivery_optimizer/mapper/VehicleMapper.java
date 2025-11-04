@@ -3,7 +3,10 @@ package com.logistics.delivery_optimizer.mapper;
 import com.logistics.delivery_optimizer.Model.Vehicle;
 import com.logistics.delivery_optimizer.dto.VehicleRequestDTO;
 import com.logistics.delivery_optimizer.dto.VehicleResponseDTO;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class VehicleMapper {
     
     public Vehicle toEntity(VehicleRequestDTO dto) {
