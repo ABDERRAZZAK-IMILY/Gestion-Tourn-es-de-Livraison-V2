@@ -8,14 +8,21 @@ import com.logistics.delivery_optimizer.dto.VehicleRequestDTO;
 import com.logistics.delivery_optimizer.dto.VehicleResponseDTO;
 import com.logistics.delivery_optimizer.mapper.VehicleMapper;
 import com.logistics.delivery_optimizer.repository.VehicleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
 
 
-    private VehicleRepository vehicleRepository;
-    private VehicleMapper vehicleMapper;
+    private final VehicleRepository vehicleRepository;
+    private final VehicleMapper vehicleMapper;
+
+    @Autowired
+    public VehicleServiceImpl(VehicleRepository vehicleRepository, VehicleMapper vehicleMapper) {
+        this.vehicleRepository = vehicleRepository;
+        this.vehicleMapper = vehicleMapper;
+    }
 
     @Override
     public VehicleResponseDTO registerVehicle(VehicleRequestDTO vehicleRequestDTO){
@@ -47,14 +54,5 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicledelete = vehicleRepository.findById(id).orElseThrow(RuntimeException::new);
             vehicleRepository.delete(vehicledelete);
     }
-
-    public void setVehicleRepository(VehicleRepository vehicleRepository) {
-        this.vehicleRepository = vehicleRepository;
-    }
-
-    public void setVehicleMapper(VehicleMapper vehicleMapper) {
-        this.vehicleMapper = vehicleMapper;
-    }
-
     
 }
