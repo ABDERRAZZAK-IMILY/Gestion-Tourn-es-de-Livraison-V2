@@ -5,10 +5,12 @@ import com.logistics.delivery_optimizer.Model.Vehicle;
 import com.logistics.delivery_optimizer.Model.Warehouse;
 import com.logistics.delivery_optimizer.Model.Enums.VehicleType;
 import com.logistics.delivery_optimizer.util.DistanceCalculator;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class NearestNeighborOptimizer implements TourOptimizer {
     @Override
     public List<Delivery> calculateOptimalTour(Warehouse startPoint, List<Delivery> deliveries, Vehicle vehicle) {
