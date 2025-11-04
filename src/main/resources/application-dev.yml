@@ -4,3 +4,11 @@ spring:
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:}
     driver-class-name: org.h2.Driver
+
+
+  ai:
+    deepseek:
+      api-key: "sk-971bc6d345a64397b2661db962c2889d"
+      chat:
+        options:
+          model: deepseek-chat

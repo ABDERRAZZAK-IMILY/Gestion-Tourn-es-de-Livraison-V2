@@ -35,7 +35,7 @@ public class TourServiceImpl implements TourService {
 
 
     @Autowired
-    public TourServiceImpl(@Qualifier("nearestNeighborOptimizer") TourOptimizer tourOptimizer, TourRepository tourRepository, DeliveryRepository deliveryRepository, VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository, TourMapper tourMapper) {
+    public TourServiceImpl(TourOptimizer tourOptimizer, TourRepository tourRepository, DeliveryRepository deliveryRepository, VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository, TourMapper tourMapper) {
         this.tourOptimizer = tourOptimizer;
         this.tourRepository = tourRepository;
         this.deliveryRepository = deliveryRepository;

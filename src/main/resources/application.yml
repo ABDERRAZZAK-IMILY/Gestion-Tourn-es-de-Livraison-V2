@@ -22,3 +22,11 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+  app:
+    optimization:
+      # 'nearest_neighbor', 'clarke_wright'
+      algorithm: nearest_neighbor
+
+
+
