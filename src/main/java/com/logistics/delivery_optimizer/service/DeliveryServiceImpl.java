@@ -6,11 +6,13 @@ import com.logistics.delivery_optimizer.dto.DeliveryRequestDTO;
 import com.logistics.delivery_optimizer.dto.DeliveryResponseDTO;
 import com.logistics.delivery_optimizer.mapper.DeliveryMapper;
 import com.logistics.delivery_optimizer.repository.DeliveryRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Service
 public class DeliveryServiceImpl implements DeliveryService {
 
     private DeliveryRepository deliveryRepository;

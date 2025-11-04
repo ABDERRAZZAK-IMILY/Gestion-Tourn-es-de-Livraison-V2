@@ -13,11 +13,12 @@ import com.logistics.delivery_optimizer.service.optimizer.TourOptimizer;
 import com.logistics.delivery_optimizer.util.DistanceCalculator;
 import com.logistics.delivery_optimizer.dto.TourResponseDto;
 import com.logistics.delivery_optimizer.mapper.TourMapper;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
-
+@Service
 public class TourServiceImpl implements TourService {
 
     private TourOptimizer tourOptimizer;
