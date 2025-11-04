@@ -8,7 +8,9 @@ import com.logistics.delivery_optimizer.dto.VehicleRequestDTO;
 import com.logistics.delivery_optimizer.dto.VehicleResponseDTO;
 import com.logistics.delivery_optimizer.mapper.VehicleMapper;
 import com.logistics.delivery_optimizer.repository.VehicleRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VehicleServiceImpl implements VehicleService {
 
 

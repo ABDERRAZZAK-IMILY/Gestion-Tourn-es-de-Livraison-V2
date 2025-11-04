@@ -5,9 +5,13 @@ import com.logistics.delivery_optimizer.dto.WarehouseRequestDTO;
 import com.logistics.delivery_optimizer.dto.WarehouseResponseDTO;
 import com.logistics.delivery_optimizer.mapper.WarehouseMapper;
 import com.logistics.delivery_optimizer.repository.WarehouseRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+@Service
 public class WarehouseServiceImpl implements WarehouseService {
 
     private WarehouseRepository warehouseRepository;
