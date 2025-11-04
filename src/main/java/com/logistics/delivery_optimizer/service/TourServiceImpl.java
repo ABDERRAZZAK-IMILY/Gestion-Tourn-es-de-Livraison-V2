@@ -1,6 +1,7 @@
 package com.logistics.delivery_optimizer.service;
 
 import com.logistics.delivery_optimizer.Model.Delivery;
+import com.logistics.delivery_optimizer.Model.Enums.DeliveryStatus;
 import com.logistics.delivery_optimizer.Model.Tour;
 import com.logistics.delivery_optimizer.Model.Vehicle;
 import com.logistics.delivery_optimizer.Model.Warehouse;
@@ -13,6 +14,8 @@ import com.logistics.delivery_optimizer.service.optimizer.TourOptimizer;
 import com.logistics.delivery_optimizer.util.DistanceCalculator;
 import com.logistics.delivery_optimizer.dto.TourResponseDto;
 import com.logistics.delivery_optimizer.mapper.TourMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,15 +24,25 @@ import java.util.List;
 @Service
 public class TourServiceImpl implements TourService {
 
-    private TourOptimizer tourOptimizer;
+    private final TourOptimizer tourOptimizer;
     
-    private TourRepository tourRepository;
-    private DeliveryRepository deliveryRepository;
-    private VehicleRepository vehicleRepository;
-    private WarehouseRepository warehouseRepository;
+    private final TourRepository tourRepository;
+    private final DeliveryRepository deliveryRepository;
+    private final VehicleRepository vehicleRepository;
+    private final WarehouseRepository warehouseRepository;
 
-    private TourMapper tourMapper;
+    private final TourMapper tourMapper;
 
+
+    @Autowired
+    public TourServiceImpl(@Qualifier("nearestNeighborOptimizer") TourOptimizer tourOptimizer, TourRepository tourRepository, DeliveryRepository deliveryRepository, VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository, TourMapper tourMapper) {
+        this.tourOptimizer = tourOptimizer;
+        this.tourRepository = tourRepository;
+        this.deliveryRepository = deliveryRepository;
+        this.vehicleRepository = vehicleRepository;
+        this.warehouseRepository = warehouseRepository;
+        this.tourMapper = tourMapper;
+    }
 
     @Override
     public TourResponseDto createOptimizedTour(Long vehicleId, Long warehouseId, List<Long> deliveryIds) {
@@ -52,7 +65,7 @@ public class TourServiceImpl implements TourService {
 
         for (Delivery d : optimizedList) {
             d.setTour(newTour);
-            d.setStatus(com.logistics.delivery_optimizer.Model.Enums.DeliveryStatus.IN_TRANSIT);
+            d.setStatus(DeliveryStatus.IN_TRANSIT);
         }
 
         Tour savedTour = tourRepository.save(newTour);
@@ -98,29 +111,4 @@ public class TourServiceImpl implements TourService {
         return totalDistance;
     }
 
-
-
-    public void setTourOptimizer(TourOptimizer tourOptimizer) {
-        this.tourOptimizer = tourOptimizer;
-    }
-
-    public void setTourRepository(TourRepository tourRepository) {
-        this.tourRepository = tourRepository;
-    }
-
-    public void setDeliveryRepository(DeliveryRepository deliveryRepository) {
-        this.deliveryRepository = deliveryRepository;
-    }
-
-    public void setVehicleRepository(VehicleRepository vehicleRepository) {
-        this.vehicleRepository = vehicleRepository;
-    }
-
-    public void setWarehouseRepository(WarehouseRepository warehouseRepository) {
-        this.warehouseRepository = warehouseRepository;
-    }
-
-    public void setTourMapper(TourMapper tourMapper) {
-        this.tourMapper = tourMapper;
-    }
 }
