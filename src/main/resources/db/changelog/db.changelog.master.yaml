@@ -1,0 +1,310 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1762247535048-1
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_customers
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: address
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: latitude
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: longitude
+                  type: DOUBLE
+              - column:
+                  name: preferred_time_slot
+                  type: VARCHAR(255)
+            tableName: customers
+  - changeSet:
+      id: 1762247535048-2
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_deliveries
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: longitude
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: latitude
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: weight_kg
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: volumem3
+                  type: DOUBLE
+              - column:
+                  name: preferred_time_window
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(255)
+              - column:
+                  name: tour_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: customer_id
+                  type: BIGINT
+              - column:
+                  name: delivery_order
+                  type: INT
+            tableName: deliveries
+  - changeSet:
+      id: 1762247535048-3
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_delivery_history
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: customer_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: tour_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: delivery_date
+                  type: DATE
+              - column:
+                  name: planned_time
+                  type: TIME
+              - column:
+                  name: actual_time
+                  type: TIME
+              - column:
+                  constraints:
+                    nullable: false
+                  name: delay_in_minutes
+                  type: BIGINT
+              - column:
+                  name: day_of_week
+                  type: VARCHAR(255)
+            tableName: delivery_history
+  - changeSet:
+      id: 1762247535048-4
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_tours
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: tour_date
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: warehouse_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: vehicle_id
+                  type: BIGINT
+            tableName: tours
+  - changeSet:
+      id: 1762247535048-5
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_vehicles
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: type
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: license_plate
+                  type: VARCHAR(255)
+            tableName: vehicles
+  - changeSet:
+      id: 1762247535048-6
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_warehouses
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: longitude
+                  type: DOUBLE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: latitude
+                  type: DOUBLE
+              - column:
+                  name: opening_time
+                  type: TIME
+              - column:
+                  name: closing_time
+                  type: TIME
+            tableName: warehouses
+  - changeSet:
+      id: 1762247535048-7
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addUniqueConstraint:
+            columnNames: name
+            constraintName: uc_warehouses_name
+            tableName: warehouses
+  - changeSet:
+      id: 1762247535048-8
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: customer_id
+            baseTableName: deliveries
+            constraintName: FK_DELIVERIES_ON_CUSTOMER
+            referencedColumnNames: id
+            referencedTableName: customers
+  - changeSet:
+      id: 1762247535048-9
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: tour_id
+            baseTableName: deliveries
+            constraintName: FK_DELIVERIES_ON_TOUR
+            referencedColumnNames: id
+            referencedTableName: tours
+  - changeSet:
+      id: 1762247535048-10
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: customer_id
+            baseTableName: delivery_history
+            constraintName: FK_DELIVERY_HISTORY_ON_CUSTOMER
+            referencedColumnNames: id
+            referencedTableName: customers
+  - changeSet:
+      id: 1762247535048-11
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: tour_id
+            baseTableName: delivery_history
+            constraintName: FK_DELIVERY_HISTORY_ON_TOUR
+            referencedColumnNames: id
+            referencedTableName: tours
+  - changeSet:
+      id: 1762247535048-12
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: vehicle_id
+            baseTableName: tours
+            constraintName: FK_TOURS_ON_VEHICLE
+            referencedColumnNames: id
+            referencedTableName: vehicles
+  - changeSet:
+      id: 1762247535048-13
+      author: azeim
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: warehouse_id
+            baseTableName: tours
+            constraintName: FK_TOURS_ON_WAREHOUSE
+            referencedColumnNames: id
+            referencedTableName: warehouses
+
