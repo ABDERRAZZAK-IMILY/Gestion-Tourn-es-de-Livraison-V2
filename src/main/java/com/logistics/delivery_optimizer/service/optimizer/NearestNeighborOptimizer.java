@@ -6,11 +6,13 @@ import com.logistics.delivery_optimizer.Model.Warehouse;
 import com.logistics.delivery_optimizer.Model.Enums.VehicleType;
 import com.logistics.delivery_optimizer.util.DistanceCalculator;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@ConditionalOnProperty(name = "app.optimization.algorithm", havingValue = "nearest_neighbor", matchIfMissing = true)
 public class NearestNeighborOptimizer implements TourOptimizer {
     @Override
     public List<Delivery> calculateOptimalTour(Warehouse startPoint, List<Delivery> deliveries, Vehicle vehicle) {
