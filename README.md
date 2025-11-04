@@ -1,229 +1,192 @@
-# Système de Gestion de Banque de Sang
+# 🚚 Système de Gestion et d’Optimisation des Tournées de Livraison
 
-Application web JEE pour la gestion complète des donneurs et receveurs de sang avec automatisation du matching selon les compatibilités sanguines et les urgences médicales.
+## 🧩 1. Description du projet
 
----
+Ce projet est une **application web développée avec Spring Boot** visant à aider une entreprise logistique à **optimiser les tournées de livraison** de ses colis. Le système actuel repose sur l’algorithme simple du **plus proche voisin (Nearest Neighbor)**, mais fait face à des défis tels que l’augmentation des coûts de carburant et la croissance du nombre de clients, générant des itinéraires inefficaces.
 
+### 🎯 Objectifs
 
-![alt text]({C8CE8A95-3C87-4481-A63E-836A1292C8DE}.png)
-
-
-## Visualisateur de Compatibilite Sanguine
-
-![img_1.png](img_1.png)
-
-## 📋 Table des Matières
-
-- [Fonctionnalités](#fonctionnalités)
-- [Stack Technologique](#stack-technologique)
-- [Architecture](#architecture)
-- [Prérequis](#prérequis)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Utilisation](#utilisation)
-- [Tests](#tests)
-- [Règles Métier](#règles-métier)
-- [Diagramme de Classe](#diagramme-de-classe)
-- [Gestion de Projet](#gestion-de-projet)
-- [Contributeurs](#contributeurs)
-- [Licence](#licence)
-- [Contact](#contact)
+L’application développée permet de :
+* Gérer une flotte de véhicules hétérogène (**Vehicles**) avec leurs contraintes spécifiques (capacité max poids, volume max, nombre max de livraisons).
+* Gérer les livraisons (**Deliveries**) et leurs détails (coordonnées GPS, poids, volume, créneau horaire optionnel).
+* Gérer les entrepôts (**Warehouse**) comme points de départ et d'arrivée.
+* Implémenter l’algorithme **Clarke & Wright (Savings Algorithm)** pour optimiser les tournées (**Tour**) et réduire les distances parcourues.
+* Permettre la **comparaison des performances** entre l'algorithme **Nearest Neighbor** existant et le nouvel algorithme **Clarke & Wright**.
+* Fournir une **API REST** pour gérer toutes les entités (CRUD) et déclencher le processus d’optimisation.
 
 ---
 
-## ✨ Fonctionnalités
+## ⚙️ 2. Contrainte principale : Injection de dépendances manuelle via XML
 
-### Gestion des Donneurs
-- ✅ Création avec validation automatique d'éligibilité
-- ✅ Vérification des critères : âge (18-65 ans), poids (≥50kg)
-- ✅ Détection des contre-indications médicales
-- ✅ Statuts automatiques : DISPONIBLE, NON_DISPONIBLE, NON_ELIGIBLE
-- ✅ Association avec un receveur compatible
-- ✅ Liste avec filtres et recherche
-- ✅ Modification et suppression
+Une exigence stricte de ce projet est **l'interdiction d'utiliser les annotations Spring pour l'injection de dépendances** (`@Autowired`, `@Service`, `@Component`, `@Repository`, etc.).
 
-### Gestion des Receveurs
-- ✅ Création avec niveau d'urgence (CRITIQUE, URGENT, NORMAL)
-- ✅ Tri automatique par priorité décroissante
-- ✅ Suivi du besoin en poches de sang (4, 3 ou 1)
-- ✅ État automatique : EN_ATTENTE → SATISFAIT
-- ✅ Association avec plusieurs donneurs compatibles
-- ✅ Liste avec filtres et recherche
-- ✅ Modification et suppression
+À la place, **tous les Beans** (Services, Mappers, Controllers, Optimizers, Repositories) et leurs dépendances sont configurés **manuellement** dans le fichier :
+`src/main/resources/applicationContext.xml`.
 
-### Compatibilité Sanguine
-- ✅ Matrice de compatibilité complète
-- ✅ O- : donneur universel (compatible avec tous)
-- ✅ AB+ : receveur universel (peut recevoir de tous)
-- ✅ Visualisateur interactif de compatibilité
-- ✅ Affichage uniquement des entités compatibles lors de l'association
+🎓 **Objectif pédagogique :** Approfondir la compréhension du mécanisme d'Inversion de Contrôle (IoC) de Spring et appliquer le principe Ouvert/Fermé (Open-Closed Principle).
 
 ---
 
-## 🛠 Stack Technologique
+## 🛠️ 3. Technologies utilisées
 
-**Backend**
-- Java 8+
-- JEE : Servlets, JSP, JSTL
-- JPA/Hibernate : ORM
-- Maven : Gestion des dépendances
-- MySQL/PostgreSQL : Base de données
-
-**Frontend**
-- JSP : Pages dynamiques
-- JSTL : Tags pour la logique d'affichage
-- Tailwind CSS : Framework CSS moderne
-- JavaScript : Interactions côté client
-
-**Serveur**
-- Apache Tomcat
-
-**Tests**
-- JUnit : Tests unitaires et d'intégration
+| Technologie               | Description                                                                 |
+| :------------------------ | :-------------------------------------------------------------------------- |
+| **Java 17** | Langage principal (avec Stream API & Java Time API)                         |
+| **Spring Boot 3.x** | Framework principal (Web, Data JPA)                                         |
+| **Spring Data JPA** | Accès aux données et gestion des Repositories                               |
+| **H2 Database** | Base de données relationnelle (sur fichier ou en mémoire)                     |
+| **Maven** | Outil de gestion de projet et de build                                      |
+| **Lombok** | Réduction du code répétitif (boilerplate) avec annotations (`@Data`, `@Builder`) |
+| **Springdoc OpenAPI (Swagger)** | Documentation et visualisation interactive de l'API REST                  |
+| **JUnit 5 & Mockito** | Frameworks pour les tests unitaires                                         |
+| **Design Patterns** | Repository, DTO, Mapper, Strategy                                           |
 
 ---
 
-## 🏗 Architecture
+## ▶️ 4. Instructions d’exécution
 
-Architecture MVC Multicouches :
+### 🔧 Prérequis
 
-```
-src/
-├── main/
-│ ├── java/
-│ │ ├── ma.banquesang.controller/ # Servlets
-│ │ ├── ma.banquesang.service/ # Logique métier
-│ │ ├── ma.banquesang.dao/ # Accès aux données
-│ │ ├── ma.banquesang.model/ # Entités JPA
-│ │ └── ma.banquesang.util/ # Utilitaires
-│ ├── resources/
-│ │ └── META-INF/
-│ │ └── persistence.xml # Configuration JPA
-│ └── webapp/
-│ ├── WEB-INF/
-│ │ └── web.xml # Configuration Servlets
-│ ├── index.jsp
-│ ├── donneurs.jsp
-│ ├── receveurs.jsp
-| |--find.jsp
-│ └── creation.jsp
-└── test/
-└── java/ # Tests JUnit
-```
+* JDK 17 ou version supérieure installé.
+* Maven installé et configuré dans le PATH.
 
+### 🚀 Étapes
 
-
-**Design Patterns Utilisés**
-- Repository Pattern
-- Singleton Pattern
-- MVC Pattern
-- DAO Pattern
-- Service Layer Pattern
+1.  **Cloner le dépôt :**
+    ```bash
+    git clone <https://github.com/ABDERRAZZAK-IMILY/Syst-me-de-Gestion-Optimis-e-de-Tourn-es-de-Livraison-.git>
+    cd Syst-me-de-Gestion-Optimis-e-de-Tourn-es-de-Livraison- 
+    ```
+2.  **(Optionnel) Configurer les variables d'environnement :**
+    * Créer un fichier `.env` à la racine du projet (il est ignoré par `.gitignore`).
+    * Définir les variables si nécessaire (voir `.env` pour les valeurs par défaut) :
+        ```env
+        APP_NAME=delivery-optimizer
+        DB_URL=jdbc:h2:file:~/deliverydb # Ou jdbc:h2:mem:deliverydb pour la version mémoire
+        DB_USERNAME=sa
+        DB_PASSWORD=
+        ```
+3.  **Exécuter le projet :**
+    ```bash
+    mvn spring-boot:run
+    ```
+4.  L'application démarre sur `http://localhost:8080` (ou le port défini).
 
 ---
 
-## 📦 Prérequis
-- JDK 8+
-- Maven 3.6+
-- Apache Tomcat 9+
-- PostgreSQL 12+
-- IDE : IntelliJ IDEA / Eclipse / NetBeans
+## 🧭 5. Accès aux outils intégrés
+
+* **💾 H2 Console :**
+    * Accès direct à la base de données via le navigateur.
+    * URL : `http://localhost:8080/h2-console`
+    * **JDBC URL :** `jdbc:h2:file:~/deliverydb` (ou `jdbc:h2:mem:deliverydb`)
+    * **Username :** `sa`
+    * **Password :** (laisser vide)
+
+* **📘 Swagger UI :**
+    * Documentation interactive de l'API REST.
+    * URL : `http://localhost:8080/swagger-ui.html`
+
+   # api collection :
+
+https://2m25w6fpp7.apidog.io/create-vehicle-23345747e0 
 
 ---
 
-## 🚀 Installation
+## 🧪 6. Test de l’API
 
-1. **Cloner le projet**
-```bash
-git clone https://github.com/votre-username/banque-sang.git
-cd banque-sang
+Utiliser **Postman** ou un outil similaire pour tester les endpoints de l'API.
+
+Une **collection Postman** (`postman.json`) est fournie dans le projet. Importer ce fichier dans Postman pour accéder rapidement à des exemples de requêtes pour :
+* Le CRUD des entités (`Vehicles`, `Deliveries`, `Warehouses`).
+* Le déclenchement de l'optimisation de tournée (`POST /api/v1/tours/optimize`).
+
+---
+
+## 🧱 7. Diagramme UML du modèle de données
+
+![Diagramme UML des Entités]({DEC512CF-CB2A-404D-A542-9A283D31538F}.png "Diagramme UML des Entités principales")
+
+---
+
+## 🧠 8. Structure du projet
 
 ```
-```sql 
-CREATE DATABASE banque_sang CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+com.logistics.delivery_optimizer
+├── Controller/ # Couche API (REST Controllers)
+│ ├── VehicleController.java
+│ ├── DeliveryController.java
+│ ├── WarehouseController.java
+│ └── TourController.java
+│
+├── dto/ # Couche DTO (Data Transfer Objects)
+│ ├── VehicleRequestDTO.java
+│ ├── VehicleResponseDTO.java
+│ └── ... (autres DTOs)
+│
+├── mapper/ # Couche Mapper (Conversion DTO <-> Entity)
+│ ├── VehicleMapper.java
+│ └── ... (autres Mappers)
+│
+├── Model/ # Couche Modèle (Entités JPA & Enums)
+│ ├── Entities/
+│ │ ├── Vehicle.java
+│ │ ├── Delivery.java
+│ │ ├── Warehouse.java
+│ │ └── Tour.java
+│ │
+│ └── Enums/
+│ ├── VehicleType.java
+│ └── DeliveryStatus.java
+│
+├── repository/ # Couche Repository (Accès aux données - Spring Data JPA)
+│ ├── VehicleRepository.java
+│ └── ... (autres Repositories)
+│
+├── service/ # Couche Service (Logique métier)
+│ ├── VehicleService.java (Interface)
+│ ├── VehicleServiceImpl.java (Implémentation)
+│ ├── ... (autres Services)
+│ │
+│ └── optimizer/ # Sous-package pour les algorithmes (Strategy Pattern)
+│ ├── TourOptimizer.java (Interface Stratégie)
+│ ├── NearestNeighborOptimizer.java (Implémentation)
+│ └── ClarkeWrightOptimizer.java (Implémentation)
+│
+├── util/ # Utilitaires
+│ └── DistanceCalculator.java
+│
+├── DeliveryOptimizerApplication.java # Point d'entrée Spring Boot
+│
+└── resources/
+├── application.properties # Configuration générale & DB
+└── applicationContext.xml # Configuration manuelle des Beans (IoC)
+
 ```
-2. **Configurer persistence.xml**
+---
 
-```xml
-<persistence-unit name="banque-sang-pu">
-    <properties>
-        <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/banque_sang"/>
-        <property name="javax.persistence.jdbc.user" value="root"/>
-        <property name="javax.persistence.jdbc.password" value="votre_password"/>
-        <property name="hibernate.hbm2ddl.auto" value="update"/>
-    </properties>
-</persistence-unit>
-```
+## 📈 9. Comparaison des Algorithmes (Objectif du projet)
 
-4. **Compiler avec Maven**
+| Algorithme         | Description                                     | Avantages                                      | Inconvénients                               |
+| :----------------- | :---------------------------------------------- | :--------------------------------------------- | :------------------------------------------ |
+| **Nearest Neighbor** | Choisit toujours la livraison la plus proche   | Très rapide, simple à implémenter            | Génère souvent des trajets longs, sous-optimal |
+| **Clarke & Wright** | Calcule les "économies" et fusionne les trajets | Réduit significativement la distance totale | Plus complexe, temps de calcul acceptable   |
 
-```bash
-mvn clean install
-```
-# Utilisation
+Le changement d'algorithme utilisé par `TourService` se fait **uniquement** en modifiant la référence (`ref`) dans la définition du bean `tourServiceImpl` dans `applicationContext.xml`.
 
-Page d'Accueil : Vue générale et visualisateur de compatibilité
+---
 
-Ajouter un Donneur : Formulaire avec validation automatique
+## 🧩 10. Tests unitaires (en cours)
 
-Ajouter un Receveur : Formulaire avec niveau d'urgence
+Les tests sont développés avec **JUnit 5** et **Mockito**.
+* Les fichiers de test se trouvent dans `src/test/java/com/logistics/delivery_optimizer/service/`.
+* Exemple : `VehicleServiceTest.java`.
 
-Associer Donneur-Receveur : Affichage uniquement des compatibilités
-
-Filtrer et Rechercher : Par groupe sanguin, statut ou urgence
-
-# 🧪 Tests
-
+Pour exécuter les tests :
 ```bash
 mvn test
 ```
 
-# 📊 Règles Métier
-
-## Critères d'Éligibilité des Donneurs
-
-| Critère                  | Valeur Requise       |
-|---------------------------|--------------------|
-| Âge                       | 18 - 65 ans        |
-| Poids                     | ≥ 50 kg            |
-| Hépatite B/C              | Non                |
-| VIH                       | Non                |
-| Diabète insulino-dépendant| Non                |
-| Grossesse                 | Non                |
-| Allaitement               | Non                |
-
-## Niveaux d'Urgence et Poches Nécessaires
-
-| Urgence   | Poches | Priorité  |
-|-----------|--------|----------|
-| CRITIQUE  | 4      | Maximale |
-| URGENT    | 3      | Élevée   |
-| NORMAL    | 1      | Standard |
-
-## Statuts
-
-**Donneurs** : DISPONIBLE, NON_DISPONIBLE, NON_ELIGIBLE  
-**Receveurs** : EN_ATTENTE, SATISFAIT
-
-# 📈 Diagramme de Classe
-
-![alt text]({E486BABC-0AB7-403B-9E0E-A97B0E0DBD4E}.png)
-
-
-# schéma récapitulatif
-
-![img.png](img.png)
-
-# 📝 Gestion de Projet
-
-Méthodologie : Scrum / JIRA
-
-User Stories, Sprints d’1 semaine, Backlog priorisé, Burndown chart
-
-# 👥 Contributeurs
-
-IMILY ABDERRAZZAK
-
-# 📞 Contact
-
-Pour toute question : azeimily2001@gmail.com
+# 👤 12. Auteur
+Développé par : IMILY ABDERRAZZAK

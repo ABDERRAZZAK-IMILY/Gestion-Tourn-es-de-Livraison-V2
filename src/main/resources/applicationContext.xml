@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/data/jpa
+       http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <jpa:repositories base-package="com.logistics.delivery_optimizer.repository" />
+
+    <bean id="vehicleMapper" class="com.logistics.delivery_optimizer.mapper.VehicleMapper"/>
+
+    <bean id="vehicleserviceimpl" class="com.logistics.delivery_optimizer.service.VehicleServiceImpl">
+           <property name="vehicleMapper" ref="vehicleMapper"/>
+           <property name="vehicleRepository" ref="vehicleRepository"/>
+    </bean>
+
+    <bean id="vehicleController" class="com.logistics.delivery_optimizer.Controller.VehicleController">
+           <constructor-arg name="vehicleService" ref="vehicleserviceimpl" ></constructor-arg>
+    </bean>
+
+    <bean id="deliveryMapper" class="com.logistics.delivery_optimizer.mapper.DeliveryMapper" ></bean>
+
+    <bean id="deliveryServiceImpl" class="com.logistics.delivery_optimizer.service.DeliveryServiceImpl">
+           <property name="deliveryMapper" ref="deliveryMapper"/>
+           <property name="deliveryRepository" ref="deliveryRepository"/>
+    </bean>
+
+    <bean id="deliveryController" class="com.logistics.delivery_optimizer.Controller.DeliveryController">
+           <constructor-arg name="deliveryService" ref="deliveryServiceImpl"></constructor-arg>
+    </bean>
+
+    <bean id="warehouseMapper" class="com.logistics.delivery_optimizer.mapper.WarehouseMapper"/>
+
+    <bean id="warehouseServiceImpl" class="com.logistics.delivery_optimizer.service.WarehouseServiceImpl">
+        <property name="warehouseMapper" ref="warehouseMapper"/>
+        <property name="warehouseRepository" ref="warehouseRepository"/>
+    </bean>
+
+    <bean id="warehouseController" class="com.logistics.delivery_optimizer.Controller.WarehouseController">
+        <constructor-arg name="warehouseService" ref="warehouseServiceImpl" />
+    </bean>
+    <bean id="tourMapper" class="com.logistics.delivery_optimizer.mapper.TourMapper">
+        <property name="vehicleMapper" ref="vehicleMapper"/>
+        <property name="deliveryMapper" ref="deliveryMapper"/>
+        <property name="warehouseMapper" ref="warehouseMapper"/>
+    </bean>
+
+    <bean id="nearestNeighborOptimizer" class="com.logistics.delivery_optimizer.service.optimizer.NearestNeighborOptimizer"/>
+    
+    <bean id="clarkeWrightOptimizer" class="com.logistics.delivery_optimizer.service.optimizer.ClarkeWrightOptimizer"/>
+
+    <bean id="tourServiceImpl" class="com.logistics.delivery_optimizer.service.TourServiceImpl">
+        <property name="tourRepository" ref="tourRepository"/>
+        <property name="deliveryRepository" ref="deliveryRepository"/>
+        <property name="vehicleRepository" ref="vehicleRepository"/>
+        <property name="warehouseRepository" ref="warehouseRepository"/>
+        <property name="tourOptimizer" ref="nearestNeighborOptimizer" /> 
+        <property name="tourMapper" ref="tourMapper"/> 
+    </bean>
+
+    <bean id="tourController" class="com.logistics.delivery_optimizer.Controller.TourController">
+        <constructor-arg name="tourService" ref="tourServiceImpl"/>
+    </bean>
+
+</beans>
