@@ -6,6 +6,7 @@ import com.logistics.delivery_optimizer.dto.DeliveryRequestDTO;
 import com.logistics.delivery_optimizer.dto.DeliveryResponseDTO;
 import com.logistics.delivery_optimizer.mapper.DeliveryMapper;
 import com.logistics.delivery_optimizer.repository.DeliveryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +16,15 @@ import java.util.stream.Collectors;
 @Service
 public class DeliveryServiceImpl implements DeliveryService {
 
-    private DeliveryRepository deliveryRepository;
-    private DeliveryMapper deliveryMapper;
+    private final DeliveryRepository deliveryRepository;
+    private final DeliveryMapper deliveryMapper;
 
+
+    @Autowired
+    public DeliveryServiceImpl(DeliveryRepository deliveryRepository, DeliveryMapper deliveryMapper) {
+        this.deliveryRepository = deliveryRepository;
+        this.deliveryMapper = deliveryMapper;
+    }
 
     @Override
     public DeliveryResponseDTO createDelivery(DeliveryRequestDTO requestDTO) {
@@ -76,13 +83,6 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
 
-    public void setDeliveryRepository(DeliveryRepository deliveryRepository) {
-        this.deliveryRepository = deliveryRepository;
-    }
-
-    public void setDeliveryMapper(DeliveryMapper deliveryMapper) {
-        this.deliveryMapper = deliveryMapper;
-    }
 
     public double getDeliveryStatus(DeliveryStatus status){
 
