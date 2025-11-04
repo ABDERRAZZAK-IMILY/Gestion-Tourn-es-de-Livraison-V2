@@ -5,10 +5,12 @@ import com.logistics.delivery_optimizer.Model.Vehicle;
 import com.logistics.delivery_optimizer.Model.Warehouse;
 import com.logistics.delivery_optimizer.Model.Enums.VehicleType;
 import com.logistics.delivery_optimizer.util.DistanceCalculator;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class ClarkeWrightOptimizer implements TourOptimizer {
 
     private static class Saving {
