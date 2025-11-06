@@ -8,9 +8,12 @@ import com.logistics.delivery_optimizer.Model.Delivery;
 import com.logistics.delivery_optimizer.Model.Enums.DeliveryStatus;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 
-    List<Delivery> findByStatus(DeliveryStatus status);
+    Page<Delivery> findByStatus(DeliveryStatus status, Pageable pageable);
     List<Delivery> findByTourId(Long tourId);
 
     @Query(value = "SELECT * From Delivery Where Status = :status" , nativeQuery = true)
