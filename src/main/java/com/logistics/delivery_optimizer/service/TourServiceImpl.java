@@ -17,6 +17,7 @@ import com.logistics.delivery_optimizer.mapper.TourMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,16 +38,18 @@ public class TourServiceImpl implements TourService {
 
 
     @Autowired
-    public TourServiceImpl(TourOptimizer tourOptimizer, TourRepository tourRepository, DeliveryRepository deliveryRepository, VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository, TourMapper tourMapper) {
+    public TourServiceImpl(TourOptimizer tourOptimizer, TourRepository tourRepository, DeliveryRepository deliveryRepository, VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository, TourMapper tourMapper, DeliveryHistoryService deliveryHistoryService) {
         this.tourOptimizer = tourOptimizer;
         this.tourRepository = tourRepository;
         this.deliveryRepository = deliveryRepository;
         this.vehicleRepository = vehicleRepository;
         this.warehouseRepository = warehouseRepository;
         this.tourMapper = tourMapper;
+        this.deliveryHistoryService = deliveryHistoryService;
     }
 
     @Override
+    @Transactional
     public TourResponseDto createOptimizedTour(Long vehicleId, Long warehouseId, List<Long> deliveryIds) {
         
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
@@ -80,6 +83,26 @@ public class TourServiceImpl implements TourService {
 
         return responseDto;
     }
+
+    @Override
+    @Transactional
+    public TourResponseDto completeTour(Long tourId) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
+
+        for (Delivery d : tour.getDeliveries()) {
+            d.setStatus(DeliveryStatus.DELIVERED);
+        }
+
+        Tour completedTour = tourRepository.save(tour);
+
+        deliveryHistoryService.createHistoryFromTour(completedTour);
+
+        return tourMapper.toDto(completedTour);
+    }
+
+
+
 
     @Override
     public double getTotalDistance(Tour tour) {
