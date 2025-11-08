@@ -9,6 +9,8 @@ import com.logistics.delivery_optimizer.service.AIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -24,6 +26,8 @@ public class AlOptimizer implements TourOptimizer {
     private final AIService aiService;
     private final DeliveryHistoryRepository deliveryHistoryRepository;
     private final ObjectMapper objectMapper; // Added for JSON parsing
+
+    private static final Logger logger = LoggerFactory.getLogger(AlOptimizer.class);
 
     @Autowired
     public AlOptimizer(AIService aiService,
@@ -42,17 +46,17 @@ public class AlOptimizer implements TourOptimizer {
         String deliveriesJson = convertToJson(deliveries);
         String prompt = buildPrompt(startPoint, vehicle, deliveriesJson, historyJson);
 
-        System.out.println("Sending 3 prompts to AI for voting...");
+        logger.info("Sending 3 prompts to AI for voting...");
 
         // 1️⃣ Get 3 AI responses (as you requested)
         String aiResponse1 = aiService.ask(prompt);
         String aiResponse2 = aiService.ask(prompt);
         String aiResponse3 = aiService.ask(prompt);
 
-        System.out.println("AI Responses received.");
-        System.out.println("Res 1: " + aiResponse1);
-        System.out.println("Res 2: " + aiResponse2);
-        System.out.println("Res 3: " + aiResponse3);
+        logger.debug("AI Responses received.");
+        logger.debug("Res 1: {}", aiResponse1);
+        logger.debug("Res 2: {}", aiResponse2);
+        logger.debug("Res 3: {}", aiResponse3);
 
         // 2️⃣ Parse JSON responses
         Map<String, Object> res1 = parseJson(aiResponse1);
@@ -66,14 +70,14 @@ public class AlOptimizer implements TourOptimizer {
 
         // Check for failed parsing
         if (order1 == null || order2 == null || order3 == null) {
-            System.err.println("Failed to parse one or more AI responses. Falling back to default order.");
+            logger.error("Failed to parse one or more AI responses. Falling back to default order.");
             return deliveries; // Return original order as fallback
         }
 
         // 4️⃣ Find the order that appeared at least twice
         List<Long> finalOrder = findMajorityOrder(order1, order2, order3);
 
-        System.out.println("Final agreed order: " + finalOrder);
+        logger.info("Final agreed order: {}", finalOrder);
 
         // 5️⃣ Reorder the delivery list based on the final order
         // (Optimization: use a Map for faster O(N log N) sorting instead of O(N^2))
@@ -100,12 +104,12 @@ public class AlOptimizer implements TourOptimizer {
         try {
             // Check that the JSON is not empty
             if (json == null || json.trim().isEmpty()) {
-                System.err.println("AI response was empty.");
+                logger.warn("AI response was empty.");
                 return Map.of();
             }
             return objectMapper.readValue(json, Map.class);
         } catch (Exception e) {
-            System.err.println("Failed to parse AI JSON response: " + json);
+            logger.error("Failed to parse AI JSON response: {}", json, e);
             e.printStackTrace();
             return Map.of(); // Return empty Map on failure
         }
@@ -124,7 +128,7 @@ public class AlOptimizer implements TourOptimizer {
                         .map(obj -> ((Number) obj).longValue())
                         .collect(Collectors.toList());
             } catch (Exception e) {
-                System.err.println("Error converting list of IDs: " + e.getMessage());
+                logger.error("Error converting list of IDs: " + e.getMessage());
                 return null;
             }
         }
@@ -144,7 +148,7 @@ public class AlOptimizer implements TourOptimizer {
         }
 
         // Fallback if all responses differ
-        System.out.println("AI responses differed. Using first response as fallback.");
+        logger.info("AI responses differed. Using first response as fallback.");
         return a;
     }
 
@@ -156,7 +160,7 @@ public class AlOptimizer implements TourOptimizer {
             // Note: you may need simplified DTOs if entities cause infinite recursion
             return objectMapper.writeValueAsString(data);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to convert object to JSON: {}", e.getMessage());
             return "[]";
         }
     }
