@@ -33,6 +33,8 @@ public class TourServiceImpl implements TourService {
 
     private final TourMapper tourMapper;
 
+    private final DeliveryHistoryService deliveryHistoryService;
+
 
     @Autowired
     public TourServiceImpl(TourOptimizer tourOptimizer, TourRepository tourRepository, DeliveryRepository deliveryRepository, VehicleRepository vehicleRepository, WarehouseRepository warehouseRepository, TourMapper tourMapper) {
@@ -110,5 +112,7 @@ public class TourServiceImpl implements TourService {
 
         return totalDistance;
     }
+
+
 
 }
