@@ -3,10 +3,8 @@ package com.logistics.delivery_optimizer.Controller;
 import com.logistics.delivery_optimizer.Model.Tour;
 import com.logistics.delivery_optimizer.dto.TourResponseDto;
 import com.logistics.delivery_optimizer.service.TourService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 
@@ -35,5 +33,10 @@ public class TourController {
             request.warehouseId,
             request.deliveryIds
         );
+    }
+
+    @PostMapping("/{tourId}/complete")
+    public TourResponseDto completeTour(@PathVariable Long tourId) {
+        return tourService.completeTour(tourId);
     }
 }
