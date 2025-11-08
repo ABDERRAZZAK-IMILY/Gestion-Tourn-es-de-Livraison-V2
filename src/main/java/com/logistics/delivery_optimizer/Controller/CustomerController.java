@@ -4,6 +4,7 @@ package com.logistics.delivery_optimizer.Controller;
 import com.logistics.delivery_optimizer.dto.CustomerRequestDTO;
 import com.logistics.delivery_optimizer.dto.CustomerResponseDTO;
 import com.logistics.delivery_optimizer.service.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResponseDTO> createCustomer(@RequestBody CustomerRequestDTO requestDTO) {
+    public ResponseEntity<CustomerResponseDTO> createCustomer(@Valid @RequestBody CustomerRequestDTO requestDTO) {
         CustomerResponseDTO createdCustomer = customerService.createCustomer(requestDTO);
         return new ResponseEntity<>(createdCustomer, HttpStatus.CREATED);
     }
