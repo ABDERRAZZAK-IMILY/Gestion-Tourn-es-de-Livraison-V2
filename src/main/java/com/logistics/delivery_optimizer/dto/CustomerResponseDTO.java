@@ -13,5 +13,10 @@ import lombok.NoArgsConstructor;
 public class CustomerResponseDTO {
 
 
-
+    private Long id;
+    private String name;
+    private String address;
+    private double latitude;
+    private double longitude;
+    private String preferredTimeSlot;
 }
