@@ -12,4 +12,6 @@ public interface TourService {
 
     double getTotalDistance(Tour tour);
     double calculateTourDistance(Warehouse warehouse, List<Delivery> orderedDeliveries);
+
+    TourResponseDto completeTour(Long tourId);
 }
