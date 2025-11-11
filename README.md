@@ -88,7 +88,8 @@ Construire l’image :
 docker build -t delivery-optimizer .
 ---
 Lancer le conteneur :
----
+
+```
 docker run -p 8080:8080 \
 -e SPRING_PROFILES_ACTIVE=qa \
 -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/delivery_qa_db \
@@ -97,7 +98,8 @@ docker run -p 8080:8080 \
 -e SPRING_AI_DEEPSEEK_API_KEY=VOTRE_CLÉ_API \
 --name delivery-app \
 delivery-optimizer
----
+
+```
 
 #  Accès aux outils intégrés
 Outil	URL / Détails
