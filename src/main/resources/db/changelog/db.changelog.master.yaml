@@ -307,4 +307,3 @@ databaseChangeLog:
             constraintName: FK_TOURS_ON_WAREHOUSE
             referencedColumnNames: id
             referencedTableName: warehouses
-
