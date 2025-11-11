@@ -1,7 +1,9 @@
 package com.logistics.delivery_optimizer.service;
 
+import com.logistics.delivery_optimizer.Model.Customer;
 import com.logistics.delivery_optimizer.Model.Delivery;
 import com.logistics.delivery_optimizer.Model.Enums.DeliveryStatus;
+import com.logistics.delivery_optimizer.dto.CustomerResponseDTO;
 import com.logistics.delivery_optimizer.dto.DeliveryRequestDTO;
 import com.logistics.delivery_optimizer.dto.DeliveryResponseDTO;
 import com.logistics.delivery_optimizer.mapper.DeliveryMapper;
@@ -28,6 +30,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public DeliveryResponseDTO createDelivery(DeliveryRequestDTO requestDTO) {
+
         Delivery newDelivery = deliveryMapper.toEntity(requestDTO);
         
         Delivery savedDelivery = deliveryRepository.save(newDelivery);
