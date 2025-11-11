@@ -48,7 +48,7 @@ public class AlOptimizer implements TourOptimizer {
 
         logger.info("Sending 3 prompts to AI for voting...");
 
-        // 1️⃣ Get 3 AI responses (as you requested)
+        // 1️⃣ Get 3 AI responses
         String aiResponse1 = aiService.ask(prompt);
         String aiResponse2 = aiService.ask(prompt);
         String aiResponse3 = aiService.ask(prompt);
