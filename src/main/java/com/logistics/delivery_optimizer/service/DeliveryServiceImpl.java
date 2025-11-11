@@ -7,6 +7,7 @@ import com.logistics.delivery_optimizer.dto.CustomerResponseDTO;
 import com.logistics.delivery_optimizer.dto.DeliveryRequestDTO;
 import com.logistics.delivery_optimizer.dto.DeliveryResponseDTO;
 import com.logistics.delivery_optimizer.mapper.DeliveryMapper;
+import com.logistics.delivery_optimizer.repository.CustomerRepository;
 import com.logistics.delivery_optimizer.repository.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,18 +21,24 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
+    private final CustomerRepository customerRepository;
 
 
     @Autowired
-    public DeliveryServiceImpl(DeliveryRepository deliveryRepository, DeliveryMapper deliveryMapper) {
+    public DeliveryServiceImpl(DeliveryRepository deliveryRepository, DeliveryMapper deliveryMapper , CustomerRepository customerRepository) {
         this.deliveryRepository = deliveryRepository;
         this.deliveryMapper = deliveryMapper;
+        this.customerRepository = customerRepository;
     }
 
     @Override
     public DeliveryResponseDTO createDelivery(DeliveryRequestDTO requestDTO) {
 
+        Customer customer = customerRepository.findById(requestDTO.getCustomerId()).orElseThrow(()->new RuntimeException("Customer not found with id: " + requestDTO.getCustomerId()));
+
         Delivery newDelivery = deliveryMapper.toEntity(requestDTO);
+
+        newDelivery.setCustomer(customer);
         
         Delivery savedDelivery = deliveryRepository.save(newDelivery);
         
