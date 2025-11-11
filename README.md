@@ -36,7 +36,7 @@ Le projet a été entièrement migré vers une configuration moderne basée sur 
 # Schéma Récapitulatif des Technologies - Système de Gestion Optimisée de Tournées de Livraison V2
 ### Architecture Générale
 
-![diagram (3).svg](../../Downloads/diagram%20%283%29.svg)
+![diagram (3).svg](diagram%20%283%29.svg)
 
 
 
