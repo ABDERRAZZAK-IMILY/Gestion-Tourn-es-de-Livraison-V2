@@ -1,6 +1,6 @@
 #  Système de Gestion Optimisée de Tournées de Livraison - V2.0 
 
-## 1. Description du projet
+## Description du projet
 Ce projet est l'évolution (**V2.0**) d'une application web **Spring Boot (V1)** visant à **optimiser les tournées de livraison**.  
 Cette nouvelle version étend les fonctionnalités existantes en intégrant des technologies avancées, notamment :
 
@@ -19,17 +19,21 @@ L'application mise à jour permet de :
 
 ---
 
-##  2. Évolution majeure : V1 (XML) → V2 (Annotations)
+##  Évolution majeure : V1 (XML) → V2 (Annotations)
 La contrainte principale de la **V1** était l’injection de dépendances manuelle via `applicationContext.xml`.  
 Cette contrainte est **supprimée** dans la **V2**.
 
 Le projet a été entièrement migré vers une configuration moderne basée sur les **annotations Spring** :
 `@Autowired`, `@Service`, `@Component`, `@Repository`, `@ConditionalOnProperty`.
 
-### 🎓 Objectif pédagogique
+###  Objectif pédagogique
 > Maîtriser la configuration moderne de Spring Boot, l’intégration IA (Spring AI), la gestion des BDD (Liquibase) et la conteneurisation (Docker).
 
 ---
+
+# class diagram : 
+
+![img.png](img.png)
 
 ## 🛠️ 3. Technologies utilisées
 
