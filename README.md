@@ -1,192 +1,158 @@
-# 🚚 Système de Gestion et d’Optimisation des Tournées de Livraison
+#  Système de Gestion Optimisée de Tournées de Livraison - V2.0 
 
-## 🧩 1. Description du projet
+## 1. Description du projet
+Ce projet est l'évolution (**V2.0**) d'une application web **Spring Boot (V1)** visant à **optimiser les tournées de livraison**.  
+Cette nouvelle version étend les fonctionnalités existantes en intégrant des technologies avancées, notamment :
 
-Ce projet est une **application web développée avec Spring Boot** visant à aider une entreprise logistique à **optimiser les tournées de livraison** de ses colis. Le système actuel repose sur l’algorithme simple du **plus proche voisin (Nearest Neighbor)**, mais fait face à des défis tels que l’augmentation des coûts de carburant et la croissance du nombre de clients, générant des itinéraires inefficaces.
+- **L’intelligence artificielle via Spring AI** pour une optimisation dynamique.
+- **Liquibase** pour la gestion des migrations de la base de données.
 
-### 🎯 Objectifs
-
-L’application développée permet de :
-* Gérer une flotte de véhicules hétérogène (**Vehicles**) avec leurs contraintes spécifiques (capacité max poids, volume max, nombre max de livraisons).
-* Gérer les livraisons (**Deliveries**) et leurs détails (coordonnées GPS, poids, volume, créneau horaire optionnel).
-* Gérer les entrepôts (**Warehouse**) comme points de départ et d'arrivée.
-* Implémenter l’algorithme **Clarke & Wright (Savings Algorithm)** pour optimiser les tournées (**Tour**) et réduire les distances parcourues.
-* Permettre la **comparaison des performances** entre l'algorithme **Nearest Neighbor** existant et le nouvel algorithme **Clarke & Wright**.
-* Fournir une **API REST** pour gérer toutes les entités (CRUD) et déclencher le processus d’optimisation.
+### Objectifs (V2.0)
+L'application mise à jour permet de :
+- Gérer les entités de base : `Vehicles`, `Deliveries`, `Warehouses`.
+- **(Nouveau)** Gérer les `Customers` et leur `DeliveryHistory`.
+- **(Nouveau)** Implémenter un troisième algorithme `AlOptimizer` utilisant **Spring AI**.
+- **(Nouveau)** Gérer les migrations BDD (de V1 à V2) avec **Liquibase**.
+- **(Nouveau)** Utiliser une configuration **YAML (.yml)** avec profils `dev`, `qa`.
+- **(Nouveau)** Conteneuriser l’application avec **Docker**.
+- Fournir une **API REST complète** pour le CRUD et le déclenchement des optimisations.
 
 ---
 
-## ⚙️ 2. Contrainte principale : Injection de dépendances manuelle via XML
+##  2. Évolution majeure : V1 (XML) → V2 (Annotations)
+La contrainte principale de la **V1** était l’injection de dépendances manuelle via `applicationContext.xml`.  
+Cette contrainte est **supprimée** dans la **V2**.
 
-Une exigence stricte de ce projet est **l'interdiction d'utiliser les annotations Spring pour l'injection de dépendances** (`@Autowired`, `@Service`, `@Component`, `@Repository`, etc.).
+Le projet a été entièrement migré vers une configuration moderne basée sur les **annotations Spring** :
+`@Autowired`, `@Service`, `@Component`, `@Repository`, `@ConditionalOnProperty`.
 
-À la place, **tous les Beans** (Services, Mappers, Controllers, Optimizers, Repositories) et leurs dépendances sont configurés **manuellement** dans le fichier :
-`src/main/resources/applicationContext.xml`.
-
-🎓 **Objectif pédagogique :** Approfondir la compréhension du mécanisme d'Inversion de Contrôle (IoC) de Spring et appliquer le principe Ouvert/Fermé (Open-Closed Principle).
+### 🎓 Objectif pédagogique
+> Maîtriser la configuration moderne de Spring Boot, l’intégration IA (Spring AI), la gestion des BDD (Liquibase) et la conteneurisation (Docker).
 
 ---
 
 ## 🛠️ 3. Technologies utilisées
 
-| Technologie               | Description                                                                 |
-| :------------------------ | :-------------------------------------------------------------------------- |
-| **Java 17** | Langage principal (avec Stream API & Java Time API)                         |
-| **Spring Boot 3.x** | Framework principal (Web, Data JPA)                                         |
-| **Spring Data JPA** | Accès aux données et gestion des Repositories                               |
-| **H2 Database** | Base de données relationnelle (sur fichier ou en mémoire)                     |
-| **Maven** | Outil de gestion de projet et de build                                      |
-| **Lombok** | Réduction du code répétitif (boilerplate) avec annotations (`@Data`, `@Builder`) |
-| **Springdoc OpenAPI (Swagger)** | Documentation et visualisation interactive de l'API REST                  |
-| **JUnit 5 & Mockito** | Frameworks pour les tests unitaires                                         |
-| **Design Patterns** | Repository, DTO, Mapper, Strategy                                           |
+| Technologie | Description |
+|--------------|-------------|
+| **Java 17** | Langage principal (Stream API, Java Time API) |
+| **Spring Boot 3.x** | Framework principal (Web, Data JPA) |
+| **Spring AI (DeepSeek)** | *(Nouveau)* Optimisation IA avec LLM |
+| **Liquibase** | *(Nouveau)* Gestion des migrations BDD |
+| **Spring Data JPA** | Repositories et requêtes personnalisées |
+| **H2 Database** | Base pour l’environnement `dev` |
+| **PostgreSQL** | *(Nouveau)* Base pour l’environnement `qa` |
+| **Docker** | *(Nouveau)* Conteneurisation |
+| **Maven** | Build & gestion des dépendances |
+| **Lombok** | Réduction du boilerplate (`@Data`, `@Builder`) |
+| **Springdoc OpenAPI** | Documentation Swagger |
+| **JUnit 5 & Mockito** | Tests unitaires et d’intégration |
 
 ---
 
-## ▶️ 4. Instructions d’exécution
+## 4. Instructions d’exécution
 
-### 🔧 Prérequis
+###  Prérequis
+- **JDK 17** ou supérieur
+- **Maven** installé
+- *(Optionnel)* **Docker Desktop**
+- **Clé API DeepSeek** à ajouter dans :
 
-* JDK 17 ou version supérieure installé.
-* Maven installé et configuré dans le PATH.
+src/main/resources/application-dev.yml
 
-### 🚀 Étapes
+```yaml
+spring:
+  ai:
+    deepseek:
+      api-key: "VOTRE_CLÉ_API_DEEPSEEK_ICI"
+```
 
-1.  **Cloner le dépôt :**
-    ```bash
-    git clone <https://github.com/ABDERRAZZAK-IMILY/Syst-me-de-Gestion-Optimis-e-de-Tourn-es-de-Livraison-.git>
-    cd Syst-me-de-Gestion-Optimis-e-de-Tourn-es-de-Livraison- 
-    ```
-2.  **(Optionnel) Configurer les variables d'environnement :**
-    * Créer un fichier `.env` à la racine du projet (il est ignoré par `.gitignore`).
-    * Définir les variables si nécessaire (voir `.env` pour les valeurs par défaut) :
-        ```env
-        APP_NAME=delivery-optimizer
-        DB_URL=jdbc:h2:file:~/deliverydb # Ou jdbc:h2:mem:deliverydb pour la version mémoire
-        DB_USERNAME=sa
-        DB_PASSWORD=
-        ```
-3.  **Exécuter le projet :**
-    ```bash
-    mvn spring-boot:run
-    ```
-4.  L'application démarre sur `http://localhost:8080` (ou le port défini).
+# Option 1 : Exécution locale (profil dev, base H2)
 
----
+``` bash
 
-## 🧭 5. Accès aux outils intégrés
-
-* **💾 H2 Console :**
-    * Accès direct à la base de données via le navigateur.
-    * URL : `http://localhost:8080/h2-console`
-    * **JDBC URL :** `jdbc:h2:file:~/deliverydb` (ou `jdbc:h2:mem:deliverydb`)
-    * **Username :** `sa`
-    * **Password :** (laisser vide)
-
-* **📘 Swagger UI :**
-    * Documentation interactive de l'API REST.
-    * URL : `http://localhost:8080/swagger-ui.html`
-
-   # api collection :
-
-https://2m25w6fpp7.apidog.io/create-vehicle-23345747e0 
-
----
-
-## 🧪 6. Test de l’API
-
-Utiliser **Postman** ou un outil similaire pour tester les endpoints de l'API.
-
-Une **collection Postman** (`postman.json`) est fournie dans le projet. Importer ce fichier dans Postman pour accéder rapidement à des exemples de requêtes pour :
-* Le CRUD des entités (`Vehicles`, `Deliveries`, `Warehouses`).
-* Le déclenchement de l'optimisation de tournée (`POST /api/v1/tours/optimize`).
-
----
-
-## 🧱 7. Diagramme UML du modèle de données
-
-![Diagramme UML des Entités]({DEC512CF-CB2A-404D-A542-9A283D31538F}.png "Diagramme UML des Entités principales")
-
----
-
-## 🧠 8. Structure du projet
+git clone https://github.com/ABDERRAZZAK-IMILY/Syst-me-de-Gestion-Optimis-e-de-Tourn-es-de-Livraison-.git
+cd Syst-me-de-Gestion-Optimis-e-de-Tourn-es-de-Livraison-
+mvn spring-boot:run
 
 ```
 
+# Option 2 : Exécution avec Docker
+
+Construire l’image :
+---
+docker build -t delivery-optimizer .
+---
+Lancer le conteneur :
+---
+docker run -p 8080:8080 \
+-e SPRING_PROFILES_ACTIVE=qa \
+-e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/delivery_qa_db \
+-e SPRING_DATASOURCE_USERNAME=qa_user \
+-e SPRING_DATASOURCE_PASSWORD=qa_password \
+-e SPRING_AI_DEEPSEEK_API_KEY=VOTRE_CLÉ_API \
+--name delivery-app \
+delivery-optimizer
+---
+
+#  Accès aux outils intégrés
+Outil	URL / Détails
+H2 Console (profil dev)	http://localhost:8080/h2-console
+
+JDBC URL	jdbc:h2:file:~/deliverydb
+Username	sa
+Password	(vide)
+Swagger UI	http://localhost:8080/swagger-ui.html
+
+#  Structure du projet (V2)
+```
 com.logistics.delivery_optimizer
-├── Controller/ # Couche API (REST Controllers)
-│ ├── VehicleController.java
-│ ├── DeliveryController.java
-│ ├── WarehouseController.java
-│ └── TourController.java
-│
-├── dto/ # Couche DTO (Data Transfer Objects)
-│ ├── VehicleRequestDTO.java
-│ ├── VehicleResponseDTO.java
-│ └── ... (autres DTOs)
-│
-├── mapper/ # Couche Mapper (Conversion DTO <-> Entity)
-│ ├── VehicleMapper.java
-│ └── ... (autres Mappers)
-│
-├── Model/ # Couche Modèle (Entités JPA & Enums)
-│ ├── Entities/
-│ │ ├── Vehicle.java
-│ │ ├── Delivery.java
-│ │ ├── Warehouse.java
-│ │ └── Tour.java
-│ │
-│ └── Enums/
-│ ├── VehicleType.java
-│ └── DeliveryStatus.java
-│
-├── repository/ # Couche Repository (Accès aux données - Spring Data JPA)
-│ ├── VehicleRepository.java
-│ └── ... (autres Repositories)
-│
-├── service/ # Couche Service (Logique métier)
-│ ├── VehicleService.java (Interface)
-│ ├── VehicleServiceImpl.java (Implémentation)
-│ ├── ... (autres Services)
-│ │
-│ └── optimizer/ # Sous-package pour les algorithmes (Strategy Pattern)
-│ ├── TourOptimizer.java (Interface Stratégie)
-│ ├── NearestNeighborOptimizer.java (Implémentation)
-│ └── ClarkeWrightOptimizer.java (Implémentation)
-│
-├── util/ # Utilitaires
-│ └── DistanceCalculator.java
-│
-├── DeliveryOptimizerApplication.java # Point d'entrée Spring Boot
-│
+├── controller/       # Couche API (Annotations @RestController)
+├── dto/              # Data Transfer Objects
+├── mapper/           # Conversion DTO <-> Entity
+├── model/            # Entités JPA & Enums
+│   ├── Customer.java
+│   └── DeliveryHistory.java
+├── repository/       # Repositories Spring Data JPA
+├── service/          # Logique métier (@Service)
+│   ├── optimizer/
+│   │   ├── TourOptimizer.java
+│   │   ├── NearestNeighborOptimizer.java
+│   │   ├── ClarkeWrightOptimizer.java
+│   │   └── AlOptimizer.java   # Nouveau - IA
+├── util/             # Classes utilitaires
+├── exception/        # Gestion globale des exceptions
+├── DeliveryOptimizerApplication.java
 └── resources/
-├── application.properties # Configuration générale & DB
-└── applicationContext.xml # Configuration manuelle des Beans (IoC)
-
+├── application.yml
+├── application-dev.yml
+├── application-qa.yml
+└── db/changelog/db.changelog.master.yaml
 ```
----
+# Algorithmes d’optimisation
+Algorithme	Description	Avantages	Inconvénients
+Nearest Neighbor	Choisit la livraison la plus proche	Très rapide	Souvent sous-optimal
+Clarke & Wright	Fusionne les trajets selon les “économies”	Distance réduite	Plus complexe
+AlOptimizer (IA)	(Nouveau) Analyse l’historique via Spring AI	Adaptatif, auto-apprenant	Dépendance LLM (coût/latence)
+# Activation via application.yml
+app:
+optimization:
+# Options : 'nearest_neighbor', 'clarke_wright', 'ai'
+algorithm: ai
 
-## 📈 9. Comparaison des Algorithmes (Objectif du projet)
+# Tests
 
-| Algorithme         | Description                                     | Avantages                                      | Inconvénients                               |
-| :----------------- | :---------------------------------------------- | :--------------------------------------------- | :------------------------------------------ |
-| **Nearest Neighbor** | Choisit toujours la livraison la plus proche   | Très rapide, simple à implémenter            | Génère souvent des trajets longs, sous-optimal |
-| **Clarke & Wright** | Calcule les "économies" et fusionne les trajets | Réduit significativement la distance totale | Plus complexe, temps de calcul acceptable   |
+Les tests unitaires et d’intégration sont situés dans :
+```
+src/test/java/
+```
 
-Le changement d'algorithme utilisé par `TourService` se fait **uniquement** en modifiant la référence (`ref`) dans la définition du bean `tourServiceImpl` dans `applicationContext.xml`.
-
----
-
-## 🧩 10. Tests unitaires (en cours)
-
-Les tests sont développés avec **JUnit 5** et **Mockito**.
-* Les fichiers de test se trouvent dans `src/test/java/com/logistics/delivery_optimizer/service/`.
-* Exemple : `VehicleServiceTest.java`.
-
-Pour exécuter les tests :
-```bash
+Pour les exécuter :
+```
 mvn test
 ```
+#  Auteur
 
-# 👤 12. Auteur
 Développé par : IMILY ABDERRAZZAK
+
+Développeur Full-Stack
